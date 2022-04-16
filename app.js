@@ -172,9 +172,7 @@ var UserList = {}
 //     console.log("listening to port 8080");
 // })
 
-io.on('listening', (data)=>{
-    console.log("server lestening")
-})
+
 io.on('connection', (socket) => {
 	socket.id = uuidv4()
     console.log("socket connected with id " + socket.id);
@@ -182,18 +180,20 @@ io.on('connection', (socket) => {
     setupNewSocket(socket);
 
     socket.on("enterMatchMaking", (data)=>{
-        enterMatchMaking(socket);
+        enterMatchMaking(socket, false);
+    })
+
+    socket.on("createNewRoomForPassive_RPC", (data)=>{
+        enterMatchMaking(socket, true, data.isUserOnline, data.roomID);
     })
 
     socket.on("startNewMatch_RPC", (data) =>{
         RoomList[data.roomID].readyCount++;
         console.log("ready count " + RoomList[data.roomID].readyCount)
-        if(RoomList[data.roomID].readyCount == 2)
+        data.readyCount = RoomList[data.roomID].readyCount
+        for(var key in RoomList[data.roomID].members)
         {
-            for(var key in RoomList[data.roomID].members)
-            {
-                RoomList[data.roomID].members[key].emit("startNewMatch_RPC", data);
-            }
+            RoomList[data.roomID].members[key].emit("startNewMatch_RPC", data);
         }
     })
 
@@ -203,6 +203,29 @@ io.on('connection', (socket) => {
         for(var key in RoomList[data.roomID].members)
         {
             RoomList[data.roomID].members[key].emit("gotASpawnID", data);
+        }
+    })
+
+    
+    socket.on("getAllSpawnIDsfromOtherPlayer", (data)=>{
+        for(var key in RoomList[data.roomID].members)
+        {
+            if(RoomList[data.roomID].members[key].id != socket.id)
+            {
+                RoomList[data.roomID].members[key].emit("sendAllSpawnIDsToOtherPlayer", data);
+                //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
+            }
+        }
+    })
+
+    socket.on("sendPieceUIDs", (data)=>{
+        for(var key in RoomList[data.roomID].members)
+        {
+            if(RoomList[data.roomID].members[key].id != socket.id)
+            {
+                RoomList[data.roomID].members[key].emit("receivedPieceUIDs", data);
+                //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
+            }
         }
     })
 
@@ -299,21 +322,36 @@ function setupNewSocket(socket)
     socket.emit("setMyId", setupData);
 }
 
-function enterMatchMaking(socket) 
+function enterMatchMaking(socket, isPassiveMatchMaking, dontCreateRoom, roomKey) 
 {
+    console.log(isPassiveMatchMaking + " " + dontCreateRoom + " " + roomKey)
     var isRoomAvailable = false
     var newRoomID = ""
     for (var key in RoomList) 
     {
-        if (RoomList[key].size() == 1 && RoomList[key].isOpen) 
+        if(!isPassiveMatchMaking)
         {
-            // join this room
-            RoomList[key].members[1] = socket
-            newRoomID = key
-            UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = key
-            UserList[socket.id].isHost = false;
-            isRoomAvailable = true
-            break
+            if (RoomList[key].size() == 1 && RoomList[key].isOpen && RoomList[key].members[0].id != socket.id) 
+            {
+                // join this room
+                RoomList[key].members[1] = socket
+                newRoomID = key
+                UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = key
+                UserList[socket.id].isHost = false;
+                isRoomAvailable = true
+                break
+            }
+        }
+        else
+        {
+            if(dontCreateRoom && roomKey == key)
+            {
+                RoomList[roomKey].members[1] = socket
+                newRoomID = roomKey
+                UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = roomKey
+                UserList[socket.id].isHost = false;
+                isRoomAvailable = true
+            }
         }
     }
     if (!isRoomAvailable) 
@@ -324,7 +362,7 @@ function enterMatchMaking(socket)
         newRoomID= room.id;
         UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = newRoomID
         UserList[socket.id].isHost = true;
-        room.isOpen = true;
+        room.isOpen = !isPassiveMatchMaking;
         RoomList[room.id] = room;
     }
     var _size = RoomList[newRoomID].size()
@@ -343,11 +381,27 @@ function enterMatchMaking(socket)
     {
         _memberIDs[i] = RoomList[newRoomID].members[i].id
     }
-    var roomData = { roomID: newRoomID, size: _size, memberIDs: _memberIDs, hostID: false }
+    var roomData = { roomID: newRoomID, size: _size, memberIDs: _memberIDs, hostID: false, isPassive: false}
     for (var key in RoomList[newRoomID].members) 
     {
         roomData.isHost = UserList[RoomList[newRoomID].members[key].id].isHost
-        RoomList[newRoomID].members[key].emit("enteredMatchMaking", roomData);
+        if(dontCreateRoom == undefined)
+        {
+            RoomList[newRoomID].members[key].emit("enteredMatchMaking", roomData);
+        }
+        else
+        {
+            if(dontCreateRoom)
+            {
+                roomData.isPassive = true
+                RoomList[newRoomID].members[key].emit("enteredMatchMaking", roomData);
+            }
+            else
+            {
+                roomData.isPassive = false
+                RoomList[newRoomID].members[key].emit("enteredMatchMaking", roomData);
+            }
+        }
     }
 }
 
