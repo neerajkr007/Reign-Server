@@ -194,6 +194,7 @@ io.on('connection', (socket) => {
         for(var key in RoomList[data.roomID].members)
         {
             RoomList[data.roomID].members[key].emit("startNewMatch_RPC", data);
+            
         }
     })
 
