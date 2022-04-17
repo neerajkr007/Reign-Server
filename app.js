@@ -179,6 +179,23 @@ io.on('connection', (socket) => {
 
     setupNewSocket(socket);
 
+    socket.on("setMyFBUID", (data)=>{
+        UserList[socket.id].FBUID = data;
+    })
+
+    socket.on("fetchOpponentUID", (data)=>{
+        var dataToSend = {otherPlayerFBUID: "", roomID: data}
+        for(var key in RoomList[data].members)
+        {
+            if(RoomList[data].members[key].id != socket.id)
+            {
+               dataToSend.otherPlayerFBUID = UserList[RoomList[data].members[key].id].FBUID
+            }
+        }
+        socket.emit("fetchOpponentUID", dataToSend);
+        //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
+    })
+
     socket.on("enterMatchMaking", (data)=>{
         enterMatchMaking(socket, false);
     })
