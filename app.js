@@ -252,6 +252,7 @@ io.on('connection', (socket) => {
         {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
+                console.log("sending show rpc from " + socket.id + " to " + RoomList[data.roomID].members[key].id + " room id is " + data.roomID)
                 RoomList[data.roomID].members[key].emit("showPossibleMoves_RPC", data);
                 //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
             }
@@ -263,6 +264,7 @@ io.on('connection', (socket) => {
         {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
+                console.log("sending hide rpc from " + socket.id + " to " + RoomList[data.roomID].members[key].id + " room id is " + data.roomID)
                 RoomList[data.roomID].members[key].emit("hidePossibleMoves_RPC", data);
                 //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
             }
@@ -285,7 +287,6 @@ io.on('connection', (socket) => {
         {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
-                console.log("sending show rpc from " + socket.id + " to " + RoomList[data.roomID].members[key].id + " room id is " + data.roomID)
                 RoomList[data.roomID].members[key].emit("spawnNewPiece_RPC", data);
                 //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
             }
