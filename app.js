@@ -180,16 +180,16 @@ io.on('connection', (socket) => {
     setupNewSocket(socket);
 
     socket.on("setMyFBUID", (data)=>{
-        UserList[socket.id].FBUID = data;
+        UserList[socket.id].FBUID = data.FBUID;
     })
 
     socket.on("fetchOpponentUID", (data)=>{
-        var dataToSend = {otherPlayerFBUID: "", roomID: data}
-        for(var key in RoomList[data].members)
+        var dataToSend = {otherPlayerFBUID: "", roomID: data.roomID}
+        for(var key in RoomList[data.roomID].members)
         {
-            if(RoomList[data].members[key].id != socket.id)
+            if(RoomList[data.roomID].members[key].id != socket.id)
             {
-               dataToSend.otherPlayerFBUID = UserList[RoomList[data].members[key].id].FBUID
+               dataToSend.otherPlayerFBUID = UserList[RoomList[data.roomID].members[key].id].FBUID
             }
         }
         socket.emit("fetchOpponentUID", dataToSend);
