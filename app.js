@@ -195,16 +195,6 @@ io.on('connection', (socket) => {
         socket.emit("fetchOpponentUID", dataToSend);
     })
 
-    socket.on("testingForTheBug", (data)=>{
-        for(var key in RoomList[data.roomID].members)
-        {
-            if(RoomList[data.roomID].members[key].id != socket.id)
-            {
-                RoomList[data.roomID].members[key].emit("testingForTheBug", data);
-            }
-        }
-    })
-
     socket.on("enterMatchMaking", (data)=>{
         enterMatchMaking(socket, false);
     })
@@ -254,13 +244,23 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on("showPossibleMoves_RPC", (data) =>{
+    socket.on("testingForTheBug", (data)=>{
         for(var key in RoomList[data.roomID].members)
         {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
-                console.log("sending show rpc from " + socket.id + " to " + RoomList[data.roomID].members[key].id + " room id is " + data.roomID)
-                RoomList[data.roomID].members[key].emit("showPossibleMoves_RPC", data);
+                RoomList[data.roomID].members[key].emit("testingForTheBug", data);
+            }
+        }
+    })
+
+    socket.on("showPossibleMoves_SocketMessage", (data) =>{
+        for(var key in RoomList[data.roomID].members)
+        {
+            if(RoomList[data.roomID].members[key].id != socket.id)
+            {
+                console.log("sending show rpc from " + socket.id + " to " + RoomList[data.roomID].members[key].id + " room id is " + data.roomID + " pieceUID " + data.pieceUID)
+                RoomList[data.roomID].members[key].emit("showPossibleMoves_SocketMessage", data);
             }
         }
     })
