@@ -195,6 +195,16 @@ io.on('connection', (socket) => {
         socket.emit("fetchOpponentUID", dataToSend);
     })
 
+    socket.on("testingForTheBug", (data)=>{
+        for(var key in RoomList[data.roomID].members)
+        {
+            if(RoomList[data.roomID].members[key].id != socket.id)
+            {
+                RoomList[data.roomID].members[key].emit("testingForTheBug", data);
+            }
+        }
+    })
+
     socket.on("enterMatchMaking", (data)=>{
         enterMatchMaking(socket, false);
     })
