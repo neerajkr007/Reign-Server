@@ -193,7 +193,6 @@ io.on('connection', (socket) => {
             }
         }
         socket.emit("fetchOpponentUID", dataToSend);
-        //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
     })
 
     socket.on("enterMatchMaking", (data)=>{
@@ -231,7 +230,6 @@ io.on('connection', (socket) => {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
                 RoomList[data.roomID].members[key].emit("sendAllSpawnIDsToOtherPlayer", data);
-                //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
             }
         }
     })
@@ -242,7 +240,6 @@ io.on('connection', (socket) => {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
                 RoomList[data.roomID].members[key].emit("receivedPieceUIDs", data);
-                //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
             }
         }
     })
@@ -254,7 +251,6 @@ io.on('connection', (socket) => {
             {
                 console.log("sending show rpc from " + socket.id + " to " + RoomList[data.roomID].members[key].id + " room id is " + data.roomID)
                 RoomList[data.roomID].members[key].emit("showPossibleMoves_RPC", data);
-                //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
             }
         }
     })
@@ -266,7 +262,6 @@ io.on('connection', (socket) => {
             {
                 console.log("sending hide rpc from " + socket.id + " to " + RoomList[data.roomID].members[key].id + " room id is " + data.roomID)
                 RoomList[data.roomID].members[key].emit("hidePossibleMoves_RPC", data);
-                //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
             }
         }
     })
@@ -277,7 +272,6 @@ io.on('connection', (socket) => {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
                 RoomList[data.roomID].members[key].emit("SpawnPiece_RPC", data);
-                //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
             }
         }
     })
@@ -288,7 +282,6 @@ io.on('connection', (socket) => {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
                 RoomList[data.roomID].members[key].emit("spawnNewPiece_RPC", data);
-                //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
             }
         }
     })
@@ -299,7 +292,6 @@ io.on('connection', (socket) => {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
                 RoomList[data.roomID].members[key].emit("skipTurn_RPC", data);
-                //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
             }
         }
     })
@@ -310,7 +302,6 @@ io.on('connection', (socket) => {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
                 RoomList[data.roomID].members[key].emit("undoLastMove_RPC", data);
-                //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
             }
         }
     })
@@ -321,7 +312,6 @@ io.on('connection', (socket) => {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
                 RoomList[data.roomID].members[key].emit("MoveHere_RPC", data);
-                //UserList[data.targetSocketId].socket.emit("showPossibleMoves_RPC");
             }
         }
     })
