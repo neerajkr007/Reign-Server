@@ -184,7 +184,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on("fetchOpponentUID", (data)=>{
-        var dataToSend = {otherPlayerFBUID: "", roomID: data.roomID}
+        var dataToSend = {otherPlayerFBUID: "", roomID: data.roomID, matchID: data.matchID}
         for(var key in RoomList[data.roomID].members)
         {
             if(RoomList[data.roomID].members[key].id != socket.id)
