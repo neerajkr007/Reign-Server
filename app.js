@@ -29,7 +29,8 @@ var User = function(id){
         roomIDs: [],
         isMasterClient: false,
         isHost:false,
-        socket: null
+        socket: null,
+        userName: ""
     } 
     return self;
 }
@@ -40,6 +41,7 @@ var Room = function(id){
         members: {},
         isOpen: false,
         readyCount:0,
+        hostName:"",
         size: ()=>
         {
             var count = 0;
@@ -181,15 +183,17 @@ io.on('connection', (socket) => {
 
     socket.on("setMyFBUID", (data)=>{
         UserList[socket.id].FBUID = data.FBUID;
+        UserList[socket.id].userName = data.userName;
     })
 
     socket.on("fetchOpponentUID", (data)=>{
-        var dataToSend = {otherPlayerFBUID: "", roomID: data.roomID, matchID: data.matchID}
+        var dataToSend = {otherPlayerFBUID: "", roomID: data.roomID, matchID: data.matchID, otherPlayerUserName:""}
         for(var key in RoomList[data.roomID].members)
         {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
                dataToSend.otherPlayerFBUID = UserList[RoomList[data.roomID].members[key].id].FBUID
+               dataToSend.otherPlayerUserName = UserList[RoomList[data.roomID].members[key].id].userName
             }
         }
         socket.emit("fetchOpponentUID", dataToSend);
@@ -197,6 +201,24 @@ io.on('connection', (socket) => {
 
     socket.on("enterMatchMaking", (data)=>{
         enterMatchMaking(socket, false);
+    })
+
+    socket.on("enterMatchMakingFromServerBrowser", (roomID)=>
+    {
+        RoomList[roomID].members[1] = socket
+        UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = roomID
+        UserList[socket.id].isHost = false;
+        var _memberIDs = []
+        for (var i = 0; i < RoomList[roomID].size(); i++) 
+        {
+            _memberIDs[i] = RoomList[roomID].members[i].id
+        }
+        var roomData = { roomID: roomID, size: RoomList[roomID].size(), memberIDs: _memberIDs, hostID: false, isPassive: false}
+        for (var key in RoomList[roomID].members) 
+        {
+            roomData.isHost = UserList[RoomList[roomID].members[key].id].isHost
+            RoomList[roomID].members[key].emit("enteredMatchMaking", roomData);
+        }
     })
 
     socket.on("createNewRoomForPassive_RPC", (data)=>{
@@ -223,6 +245,19 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on("getRoomsList", (data) => 
+    {
+        var _roomData = []
+        for (var key in RoomList)
+        {
+            if(RoomList[key].isOpen)
+            {
+                _roomData[_roomData.length] = {roomID: key, hostName: RoomList[key].hostName, size: RoomList[key].size()}
+            }
+        }
+        var __roomData = {roomData : _roomData}
+        socket.emit("getRoomsList", __roomData);
+    })
     
     socket.on("getAllSpawnIDsfromOtherPlayer", (data)=>{
         for(var key in RoomList[data.roomID].members)
@@ -259,7 +294,6 @@ io.on('connection', (socket) => {
         {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
-                console.log("sending show rpc from " + socket.id + " to " + RoomList[data.roomID].members[key].id + " room id is " + data.roomID + " pieceUID " + data.pieceUID)
                 RoomList[data.roomID].members[key].emit("showPossibleMoves_SocketMessage", data);
             }
         }
@@ -270,7 +304,6 @@ io.on('connection', (socket) => {
         {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
-                console.log("sending hide rpc from " + socket.id + " to " + RoomList[data.roomID].members[key].id + " room id is " + data.roomID)
                 RoomList[data.roomID].members[key].emit("hidePossibleMoves_RPC", data);
             }
         }
@@ -326,10 +359,17 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on('leaveRoom', (roomID) => {
+        if(RoomList[roomID])
+        {
+            leaveRoom(socket, roomID);
+        }
+	});
+
 	socket.on('disconnect', (data) => {
         manageDisconnect(socket);
 	});
-	
+
 });
 
 
@@ -351,6 +391,7 @@ function enterMatchMaking(socket, isPassiveMatchMaking, dontCreateRoom, roomKey)
     {
         if(!isPassiveMatchMaking)
         {
+            
             if (RoomList[key].size() == 1 && RoomList[key].isOpen && RoomList[key].members[0].id != socket.id) 
             {
                 // join this room
@@ -383,6 +424,7 @@ function enterMatchMaking(socket, isPassiveMatchMaking, dontCreateRoom, roomKey)
         UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = newRoomID
         UserList[socket.id].isHost = true;
         room.isOpen = !isPassiveMatchMaking;
+        room.hostName = UserList[socket.id].userName;
         RoomList[room.id] = room;
     }
     var _size = RoomList[newRoomID].size()
@@ -429,21 +471,31 @@ function manageDisconnect(socket)
 {
     console.log("socket Disconnected")
     if (UserList[socket.id].roomIDs != []) {
-        for(var currentRoomID of UserList[socket.id].roomIDs)
-        {
+        leaveRoom(socket)
+    }
+    delete UserList[socket.id];
+}
+
+function leaveRoom(socket, roomID)
+{
+    // user disconnects
+    if(roomID == undefined)
+    {
+        for (var currentRoomID of UserList[socket.id].roomIDs) {
             if (RoomList[currentRoomID].size() == 1) {
                 delete RoomList[currentRoomID]
                 var count = 0
                 for (var key in RoomList) {
                     count++
                 }
-                console.log("after deleting total rooms count is " + count)
+                console.log("after leaving room total rooms count is " + count)
             }
             else {
                 for (var i = 0; i < RoomList[currentRoomID].size(); i++) {
                     if (RoomList[currentRoomID].members[i].id == socket.id) {
                         if (i == 0) {
-                            RoomList[currentRoomID].members[0] = RoomList[currentRoomID].members[1]
+                            RoomList[currentRoomID].members[0] = RoomList[currentRoomID].members[1];
+                            RoomList[currentRoomID].hostName = RoomList[currentRoomID].members[0].userName; 
                             delete RoomList[currentRoomID].members[1]
                         }
                         else {
@@ -458,8 +510,36 @@ function manageDisconnect(socket)
                 console.log("after deleting room size is  " + RoomList[currentRoomID].size() + " total rooms count is " + count)
             }
         }
-        
-
+    
     }
-    delete UserList[socket.id];
+    else
+    {
+        if (RoomList[roomID].size() == 1) {
+            delete RoomList[roomID]
+            var count = 0
+            for (var key in RoomList) {
+                count++
+            }
+            console.log("after leaving room total rooms count is " + count)
+        }
+        else {
+            for (var i = 0; i < RoomList[roomID].size(); i++) {
+                if (RoomList[roomID].members[i].id == socket.id) {
+                    if (i == 0) {
+                        RoomList[roomID].members[0] = RoomList[roomID].members[1]
+                        RoomList[roomID].hostName = RoomList[roomID].members[0].userName; 
+                        delete RoomList[roomID].members[1]
+                    }
+                    else {
+                        delete RoomList[roomID].members[1]
+                    }
+                }
+            }
+            var count = 0
+            for (var key in RoomList) {
+                count++
+            }
+            console.log("after leaving room size is  " + RoomList[currentRoomID].size() + " total rooms count is " + count)
+        }
+    }
 }
