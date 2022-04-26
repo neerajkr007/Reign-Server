@@ -280,13 +280,16 @@ io.on('connection', (socket) => {
     })
 
     socket.on("getLatestDataFromOnlineUser", (data)=>{
+        console.log("got emit to get latest data " + data.opponentFBUID)
         for(var key in UserList)
         {
             if (UserList[key].FBUID == data.opponentFBUID) 
             {
+                console.log("user found ")
                 var temp = data.myID
                 data.myID = data.opponentFBUID
                 data.opponentFBUID = temp
+                console.log("new data is " + data)
                 UserList[key].socket.emit("getLatestDataFromOnlineUser", data);
                 break;
             }
@@ -299,7 +302,7 @@ io.on('connection', (socket) => {
             if (UserList[key].FBUID == data.opponentFBUID) 
             {
                 UserList[key].socket.emit("sendLatestData", data);
-                break;
+                break; 
             }
         }
     })
