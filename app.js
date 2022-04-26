@@ -280,12 +280,10 @@ io.on('connection', (socket) => {
     })
 
     socket.on("getLatestDataFromOnlineUser", (data)=>{
-        console.log("got emit to get latest data " + data.opponentFBUID)
         for(var key in UserList)
         {
             if (UserList[key].FBUID == data.opponentFBUID) 
             {
-                console.log("new data is " + data.myID + " " + data.opponentFBUID)
                 UserList[key].socket.emit("getLatestDataFromOnlineUser", data);
                 break;
             }
