@@ -285,11 +285,7 @@ io.on('connection', (socket) => {
         {
             if (UserList[key].FBUID == data.opponentFBUID) 
             {
-                console.log("user found ")
-                var temp = data.myID
-                data.myID = data.opponentFBUID
-                data.opponentFBUID = temp
-                console.log("new data is " + data)
+                console.log("new data is " + data.myID + " " + data.opponentFBUID)
                 UserList[key].socket.emit("getLatestDataFromOnlineUser", data);
                 break;
             }
