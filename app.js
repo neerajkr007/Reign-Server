@@ -279,6 +279,31 @@ io.on('connection', (socket) => {
         }
     })
 
+    socket.on("getLatestDataFromOnlineUser", (data)=>{
+        for(var key in UserList)
+        {
+            if (UserList[key].FBUID == data.opponentFBUID) 
+            {
+                var temp = data.myID
+                data.myID = data.opponentFBUID
+                data.opponentFBUID = temp
+                UserList[key].socket.emit("getLatestDataFromOnlineUser", data);
+                break;
+            }
+        }
+    })
+
+    socket.on("sendLatestData", (data)=>{
+        for(var key in UserList)
+        {
+            if (UserList[key].FBUID == data.opponentFBUID) 
+            {
+                UserList[key].socket.emit("sendLatestData", data);
+                break;
+            }
+        }
+    })
+
     socket.on("testingForTheBug", (data)=>{
         for(var key in RoomList[data.roomID].members)
         {
