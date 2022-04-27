@@ -282,7 +282,7 @@ io.on('connection', (socket) => {
     socket.on("getLatestDataFromOnlineUser", (data)=>{
         for(var key in UserList)
         {
-            if (UserList[key].FBUID == data.opponentFBUID) 
+            if (UserList[key].FBUID == data.opponentFBUID && socket != UserList[key].socket) 
             {
                 UserList[key].socket.emit("getLatestDataFromOnlineUser", data);
                 break;
@@ -293,7 +293,7 @@ io.on('connection', (socket) => {
     socket.on("sendLatestData", (data)=>{
         for(var key in UserList)
         {
-            if (UserList[key].FBUID == data.opponentFBUID) 
+            if (UserList[key].FBUID == data.opponentFBUID && socket != UserList[key].socket) 
             {
                 UserList[key].socket.emit("sendLatestData", data);
                 break; 
@@ -458,6 +458,7 @@ function enterMatchMaking(socket, isPassiveMatchMaking, dontCreateRoom, roomKey)
         count++
     }
 
+    console.log("new room id is " + newRoomID)
     console.log("room size is  " + _size + " total rooms count is " + count)
 
     var _memberIDs = []
