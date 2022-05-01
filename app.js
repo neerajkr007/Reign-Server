@@ -27,7 +27,7 @@ const {
 var https = require("https");
 setInterval(function() {
     console.log("pinging myself")
-    //https.get("https://reign-socket-server.herokuapp.com/");
+    https.get("https://reign-socket-server.herokuapp.com/");
 }, 1200000); 
 
 
@@ -52,6 +52,7 @@ var Room = function(id){
         isNewGame: false,
         readyCount:0,
         hostName:"",
+        isHostOnline:true,
         size: ()=>
         {
             var count = 0;
@@ -594,12 +595,20 @@ function leaveRoom(socket, roomID)
             }
             else if(RoomList[currentRoomID].size() == 1 && RoomList[currentRoomID].isNewGame)
             {
+                RoomList[currentRoomID].isHostOnline = false
                 AwayUserList[socket.id] = UserList[socket.id]
             }
             else if(RoomList[currentRoomID].size() == 2)
             {
                 for (var i = 0; i < RoomList[currentRoomID].size(); i++) {
+                    if(!RoomList[currentRoomID].isHostOnline)
+                    {
+                        delete RoomList[currentRoomID]
+                        break
+                    }
+                    console.log("is this called ?")
                     if (RoomList[currentRoomID].members[i].id == socket.id) {
+                        RoomList[currentRoomID].isOpen = false
                         if (i == 0) {
                             RoomList[currentRoomID].members[0] = RoomList[currentRoomID].members[1];
                             RoomList[currentRoomID].hostName = RoomList[currentRoomID].members[0].userName; 
@@ -614,7 +623,7 @@ function leaveRoom(socket, roomID)
                 for (var key in RoomList) {
                     count++
                 }
-                console.log("after deleting room size is  " + RoomList[currentRoomID].size() + " total rooms count is " + count)
+                console.log("after deleting room (size was 2) total rooms count is " + count)
             }
         }
     
