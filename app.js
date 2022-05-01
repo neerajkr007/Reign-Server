@@ -1,5 +1,7 @@
 //const WebSocket = require('socket');
-const serv = require('http').createServer();
+const express = require('express');
+const app = express();
+const serv = require('http').createServer(app);
 serv.listen(process.env.PORT || 3000); 
 const io = require('socket.io')(serv, { //8123 is the local port we are binding the demo server to
     pingInterval: 30005,		//An interval how often a ping is sent
@@ -22,6 +24,13 @@ const {
 //     console.log('server started')
 // })
 
+var https = require("https");
+setInterval(function() {
+    console.log("pinging myself")
+    https.get("https://reign-socket-server.herokuapp.com/");
+}, 1200000); 
+
+
 var User = function(id){
 	var self = {
         id:id,
@@ -40,6 +49,7 @@ var Room = function(id){
         id:id,
         members: {},
         isOpen: false,
+        isNewGame: false,
         readyCount:0,
         hostName:"",
         size: ()=>
@@ -54,9 +64,17 @@ var Room = function(id){
     return self;
 }
 
+app.get('/', (req, res) =>
+{
+    console.log("page pinged")
+    //res.sendFile(__dirname + '/index.html');
+});
+
 var RoomList = {}
 
 var UserList = {}
+
+var AwayUserList = {}
 
 // wss.on('connection', (socket)=>{
 
@@ -192,15 +210,26 @@ io.on('connection', (socket) => {
         {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
-               dataToSend.otherPlayerFBUID = UserList[RoomList[data.roomID].members[key].id].FBUID
-               dataToSend.otherPlayerUserName = UserList[RoomList[data.roomID].members[key].id].userName
+                if(UserList[RoomList[data.roomID].members[key].id] != undefined)
+                {
+                    dataToSend.otherPlayerFBUID = UserList[RoomList[data.roomID].members[key].id].FBUID
+                    dataToSend.otherPlayerUserName = UserList[RoomList[data.roomID].members[key].id].userName
+                }
+                else
+                {
+                    if(AwayUserList[RoomList[data.roomID].members[key].id] != undefined)
+                    {
+                        dataToSend.otherPlayerFBUID = AwayUserList[RoomList[data.roomID].members[key].id].FBUID
+                        dataToSend.otherPlayerUserName = AwayUserList[RoomList[data.roomID].members[key].id].userName
+                    }
+                }
             }
         }
         socket.emit("fetchOpponentUID", dataToSend);
     })
 
     socket.on("enterMatchMaking", (data)=>{
-        enterMatchMaking(socket, false);
+        enterMatchMaking(socket, false, false);
     })
 
     socket.on("enterMatchMakingFromServerBrowser", (roomID)=>
@@ -222,7 +251,40 @@ io.on('connection', (socket) => {
     })
 
     socket.on("createNewRoomForPassive_RPC", (data)=>{
-        enterMatchMaking(socket, true, data.isUserOnline, data.roomID);
+        enterMatchMaking(socket, true, false, data.isUserOnline, data.roomID);
+    })
+
+    socket.on("createNewRoomForNewGame", (data)=>{
+        enterMatchMaking(socket, false, true);
+    //     {var room = Room(uuidv1())
+    //     room.members[0] = socket;
+    //     newRoomID= room.id;
+    //     UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = newRoomID
+    //     UserList[socket.id].isHost = true;
+    //     room.isOpen = true;
+    //     room.isNewGame = true
+    //     room.hostName = UserList[socket.id].userName;
+    //     RoomList[room.id] = room;
+    //     var _size = RoomList[newRoomID].size()
+
+    //     var count = 0
+
+    //     for (var key in RoomList) 
+    //     {
+    //         count++
+    //     }
+
+    //     console.log("new room id is " + newRoomID)
+    //     console.log("room size is  " + _size + " total rooms count is " + count)
+
+    //     var _memberIDs = []
+    //     for (var i = 0; i < RoomList[newRoomID].size(); i++) 
+    //     {
+    //         _memberIDs[i] = RoomList[newRoomID].members[i].id
+    //     }
+    //     var roomData = { roomID: newRoomID, size: _size, memberIDs: _memberIDs, isHost: true, isPassive: true}
+    //     RoomList[newRoomID].members[0].emit("enteredMatchMaking", roomData);
+    // }
     })
 
     socket.on("startNewMatch_RPC", (data) =>{
@@ -404,19 +466,19 @@ function setupNewSocket(socket)
     socket.emit("setMyId", setupData);
 }
 
-function enterMatchMaking(socket, isPassiveMatchMaking, dontCreateRoom, roomKey) 
+function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoom, roomKey) 
 {
     console.log(isPassiveMatchMaking + " " + dontCreateRoom + " " + roomKey)
     var isRoomAvailable = false
     var newRoomID = ""
-    for (var key in RoomList) 
+    if(!isPassiveMatchMaking)
     {
-        if(!isPassiveMatchMaking)
-        {
-            
+        for (var key in RoomList) 
+        {            
             if (RoomList[key].size() == 1 && RoomList[key].isOpen && RoomList[key].members[0].id != socket.id) 
             {
                 // join this room
+                console.log("joining room")
                 RoomList[key].members[1] = socket
                 newRoomID = key
                 UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = key
@@ -425,18 +487,20 @@ function enterMatchMaking(socket, isPassiveMatchMaking, dontCreateRoom, roomKey)
                 break
             }
         }
-        else
+    }
+    else
+    {
+        if(dontCreateRoom)
         {
-            if(dontCreateRoom && roomKey == key)
-            {
-                RoomList[roomKey].members[1] = socket
-                newRoomID = roomKey
-                UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = roomKey
-                UserList[socket.id].isHost = false;
-                isRoomAvailable = true
-            }
+            RoomList[roomKey].members[1] = socket
+            RoomList[roomKey].isNewGame = false;
+            newRoomID = roomKey
+            UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = roomKey
+            UserList[socket.id].isHost = false;
+            isRoomAvailable = true
         }
     }
+    
     if (!isRoomAvailable) 
     {
         // create one here
@@ -446,17 +510,13 @@ function enterMatchMaking(socket, isPassiveMatchMaking, dontCreateRoom, roomKey)
         UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = newRoomID
         UserList[socket.id].isHost = true;
         room.isOpen = !isPassiveMatchMaking;
+        room.isNewGame = isNewGame
         room.hostName = UserList[socket.id].userName;
         RoomList[room.id] = room;
     }
     var _size = RoomList[newRoomID].size()
 
-    var count = 0
-
-    for (var key in RoomList) 
-    {
-        count++
-    }
+    var count = Object.keys(RoomList).length
 
     console.log("new room id is " + newRoomID)
     console.log("room size is  " + _size + " total rooms count is " + count)
@@ -466,12 +526,17 @@ function enterMatchMaking(socket, isPassiveMatchMaking, dontCreateRoom, roomKey)
     {
         _memberIDs[i] = RoomList[newRoomID].members[i].id
     }
-    var roomData = { roomID: newRoomID, size: _size, memberIDs: _memberIDs, hostID: false, isPassive: false}
+    var roomData = { roomID: newRoomID, size: _size, memberIDs: _memberIDs, isHost: false, isPassive: false, isNewGame: RoomList[newRoomID].isNewGame}
     for (var key in RoomList[newRoomID].members) 
     {
+        if(UserList[RoomList[newRoomID].members[key].id] == undefined)
+        {
+            continue
+        }
         roomData.isHost = UserList[RoomList[newRoomID].members[key].id].isHost
         if(dontCreateRoom == undefined)
         {
+            roomData.isPassive = RoomList[newRoomID].isNewGame
             RoomList[newRoomID].members[key].emit("enteredMatchMaking", roomData);
         }
         else
@@ -487,6 +552,10 @@ function enterMatchMaking(socket, isPassiveMatchMaking, dontCreateRoom, roomKey)
                 RoomList[newRoomID].members[key].emit("enteredMatchMaking", roomData);
             }
         }
+    }
+    if(roomData.isNewGame && Object.keys(RoomList[newRoomID].members).length == 2)
+    {
+        //RoomList[newRoomID].isNewGame = false;
     }
 }
 
@@ -505,7 +574,7 @@ function leaveRoom(socket, roomID)
     if(roomID == undefined)
     {
         for (var currentRoomID of UserList[socket.id].roomIDs) {
-            if (RoomList[currentRoomID].size() == 1) {
+            if (RoomList[currentRoomID].size() == 1 && !RoomList[currentRoomID].isNewGame) {
                 delete RoomList[currentRoomID]
                 var count = 0
                 for (var key in RoomList) {
@@ -513,7 +582,12 @@ function leaveRoom(socket, roomID)
                 }
                 console.log("after leaving room total rooms count is " + count)
             }
-            else {
+            else if(RoomList[currentRoomID].size() == 1 && RoomList[currentRoomID].isNewGame)
+            {
+                AwayUserList[socket.id] = UserList[socket.id]
+            }
+            else if(RoomList[currentRoomID].size() == 2)
+            {
                 for (var i = 0; i < RoomList[currentRoomID].size(); i++) {
                     if (RoomList[currentRoomID].members[i].id == socket.id) {
                         if (i == 0) {
