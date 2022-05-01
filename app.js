@@ -293,10 +293,22 @@ io.on('connection', (socket) => {
         RoomList[data.roomID].readyCount++;
         console.log("ready count " + RoomList[data.roomID].readyCount)
         data.readyCount = RoomList[data.roomID].readyCount
+        if(RoomList[data.roomID].isNewGame)
+        {
+            data.askForFBUID = true;
+        }
+        else
+        {
+            data.askForFBUID = false;
+        }
         for(var key in RoomList[data.roomID].members)
         {
             RoomList[data.roomID].members[key].emit("startNewMatch_RPC", data);
-            
+        }
+        if(RoomList[data.roomID].isNewGame && Object.keys(RoomList[data.roomID].members).length == 2)
+        {
+            console.log("room " + data.roomID + " is no longer a new game");
+            RoomList[data.roomID].isNewGame = false;
         }
     })
 
@@ -554,10 +566,6 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
                 RoomList[newRoomID].members[key].emit("enteredMatchMaking", roomData);
             }
         }
-    }
-    if(roomData.isNewGame && Object.keys(RoomList[newRoomID].members).length == 2)
-    {
-        //RoomList[newRoomID].isNewGame = false;
     }
 }
 
