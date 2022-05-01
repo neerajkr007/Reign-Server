@@ -27,7 +27,7 @@ const {
 var https = require("https");
 setInterval(function() {
     console.log("pinging myself")
-    https.get("https://reign-socket-server.herokuapp.com/");
+    //https.get("https://reign-socket-server.herokuapp.com/");
 }, 1200000); 
 
 
@@ -75,6 +75,8 @@ var RoomList = {}
 var UserList = {}
 
 var AwayUserList = {}
+
+console.log("room list is " + Object.keys(RoomList).length)
 
 // wss.on('connection', (socket)=>{
 
