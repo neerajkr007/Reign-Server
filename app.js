@@ -544,14 +544,34 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
     var roomData = { roomID: newRoomID, size: _size, memberIDs: _memberIDs, isHost: false, isPassive: false, isNewGame: RoomList[newRoomID].isNewGame}
     for (var key in RoomList[newRoomID].members) 
     {
-        if(UserList[RoomList[newRoomID].members[key].id] == undefined)
+        if(UserList[RoomList[newRoomID].members[key].id] != undefined)
         {
-            continue
+            roomData.isHost = UserList[RoomList[newRoomID].members[key].id].isHost
         }
-        roomData.isHost = UserList[RoomList[newRoomID].members[key].id].isHost
+        else
+        {
+            roomData.isHost = AwayUserList[RoomList[newRoomID].members[key].id].isHost
+        }
         if(dontCreateRoom == undefined)
         {
             roomData.isPassive = RoomList[newRoomID].isNewGame
+            if(roomData.isNewGame && Object.keys(RoomList[newRoomID].members).length == 2)
+            {
+                if(RoomList[newRoomID].members[key].id != socket.id)
+                {
+                    if(UserList[RoomList[newRoomID].members[key].id] != undefined)
+                    {
+                        roomData.otherPlayerFBUID = UserList[RoomList[newRoomID].members[key].id].FBUID
+                    }
+                    else
+                    {
+                        if(AwayUserList[RoomList[newRoomID].members[key].id] != undefined)
+                        {
+                            roomData.otherPlayerFBUID = AwayUserList[RoomList[newRoomID].members[key].id].FBUID
+                        }
+                    }
+                }
+            }
             RoomList[newRoomID].members[key].emit("enteredMatchMaking", roomData);
         }
         else
