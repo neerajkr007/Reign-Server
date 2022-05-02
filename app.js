@@ -308,7 +308,10 @@ io.on('connection', (socket) => {
     })
 
     socket.on("startNewMatch_RPC", (data) =>{
-        RoomList[data.roomID].readyCount++;
+        if(data.shouldReadyUp)
+        {
+            RoomList[data.roomID].readyCount++;
+        }
         console.log("ready count " + RoomList[data.roomID].readyCount)
         data.readyCount = RoomList[data.roomID].readyCount
         if(RoomList[data.roomID].isNewGame)
