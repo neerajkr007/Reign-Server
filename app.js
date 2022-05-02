@@ -24,11 +24,11 @@ const {
 //     console.log('server started')
 // })
 
-var https = require("https");
-setInterval(function() {
-    console.log("pinging myself")
-    https.get("https://reign-socket-server.herokuapp.com/");
-}, 1200000); 
+// var https = require("https");
+// setInterval(function() {
+//     console.log("pinging myself")
+//     //https.get("https://reign-socket-server.herokuapp.com/");
+// }, 1200000); 
 
 
 var User = function(id){
