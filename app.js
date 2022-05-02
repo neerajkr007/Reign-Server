@@ -317,7 +317,7 @@ io.on('connection', (socket) => {
         {
             RoomList[data.roomID].readyCount++;
         }
-        console.log("ready count " + RoomList[data.roomID].readyCount + " is this a new game ? " + RoomList[data.roomID].isNewGame + "should ready up ? " + !data.shouldReadyUp)
+        console.log("ready count " + RoomList[data.roomID].readyCount + " is this a new game ? " + RoomList[data.roomID].isNewGame + " should ready up ? " + !data.shouldReadyUp + " my id is " + socket.id)
         data.readyCount = RoomList[data.roomID].readyCount
         if(RoomList[data.roomID].isNewGame)
         {
