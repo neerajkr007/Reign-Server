@@ -313,7 +313,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on("startNewMatch_RPC", (data) =>{
-        if(!data.shouldReadyUp || RoomList[data.roomID].readyCount != 1)
+        if(!data.shouldReadyUp || (data.shouldReadyUp && RoomList[data.roomID].readyCount != 1))
         {
             RoomList[data.roomID].readyCount++;
         }
