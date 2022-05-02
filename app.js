@@ -294,8 +294,13 @@ io.on('connection', (socket) => {
         if(RoomList[data.matchID] != undefined)
         {
             delete AwayUserList[RoomList[data.matchID].members[0].id]
+            
             RoomList[data.matchID].members[0] = socket;
+            UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = data.matchID
+            UserList[socket.id].isHost = true;
+            RoomList[data.matchID].hostName = UserList[socket.id].userName;
             RoomList[data.matchID].isHostOnline = true
+            
             var _size = RoomList[data.matchID].size()
             var _memberIDs = []
             for (var i = 0; i < RoomList[data.matchID].size(); i++) 
