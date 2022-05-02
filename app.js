@@ -290,6 +290,23 @@ io.on('connection', (socket) => {
     // }
     })
 
+    socket.on("joinNewGameRoom", (data)=>{
+        if(RoomList[data.matchID] != undefined)
+        {
+            delete AwayUserList[RoomList[data.matchID].members[0].id]
+            RoomList[data.matchID].members[0] = socket;
+            RoomList[data.matchID].isHostOnline = true
+            var _size = RoomList[data.matchID].size()
+            var _memberIDs = []
+            for (var i = 0; i < RoomList[data.matchID].size(); i++) 
+            {
+                _memberIDs[i] = RoomList[data.matchID].members[i].id
+            }
+            var roomData = { roomID: data.matchID, size: _size, memberIDs: _memberIDs, isHost: true, isPassive: RoomList[data.matchID].isNewGame, isNewGame: RoomList[data.matchID].isNewGame}
+            socket.emit("enteredMatchMaking", roomData);
+        }
+    })
+
     socket.on("startNewMatch_RPC", (data) =>{
         RoomList[data.roomID].readyCount++;
         console.log("ready count " + RoomList[data.roomID].readyCount)
@@ -345,6 +362,8 @@ io.on('connection', (socket) => {
             }
         }
     })
+
+
 
     socket.on("sendPieceUIDs", (data)=>{
         for(var key in RoomList[data.roomID].members)
@@ -498,6 +517,11 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
                 newRoomID = key
                 UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = key
                 UserList[socket.id].isHost = false;
+                if(!RoomList[newRoomID].isNewGame)
+                {
+                    RoomList[newRoomID].isNewGame = isNewGame;
+                }
+                RoomList[newRoomID].isOpen = false;
                 isRoomAvailable = true
                 break
             }
