@@ -68,7 +68,7 @@ var Room = function(id){
 app.get('/', (req, res) =>
 {
     console.log("page pinged")
-    //res.sendFile(__dirname + '/index.html');
+    res.send('Hello World!');
 });
 
 var RoomList = {}
