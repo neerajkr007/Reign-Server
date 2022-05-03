@@ -579,21 +579,32 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
         if(UserList[RoomList[newRoomID].members[key].id] != undefined)
         {
             roomData.isHost = UserList[RoomList[newRoomID].members[key].id].isHost
+            if(roomData.isNewGame && roomData.isHost && UserList[RoomList[newRoomID].members[key].id].roomIDs.length == 1)
+            {
+                console.log("setting true for " + RoomList[newRoomID].members[key].id);
+                roomData.forceSetOnline = false;
+            }
+            else if(roomData.isNewGame && !roomData.isHost && UserList[RoomList[newRoomID].members[key].id].roomIDs.length > 1)
+            {
+                console.log("setting false for " + RoomList[newRoomID].members[key].id);
+                roomData.forceSetOnline = true;
+            }
         }
         else
         {
             roomData.isHost = AwayUserList[RoomList[newRoomID].members[key].id].isHost
+            if(roomData.isNewGame && roomData.isHost && AwayUserList[RoomList[newRoomID].members[key].id].roomIDs.length == 1)
+            {
+                console.log("setting true for " + RoomList[newRoomID].members[key].id);
+                roomData.forceSetOnline = false;
+            }
+            else if(roomData.isNewGame && !roomData.isHost && AwayUserList[RoomList[newRoomID].members[key].id].roomIDs.length > 1)
+            {
+                console.log("setting false for " + RoomList[newRoomID].members[key].id);
+                roomData.forceSetOnline = true;
+            }
         }
-        if(roomData.isNewGame && roomData.isHost && UserList[RoomList[newRoomID].members[key].id].roomIDs.length == 1)
-        {
-            console.log("setting true for " + RoomList[newRoomID].members[key].id);
-            roomData.forceSetOnline = false;
-        }
-        else if(roomData.isNewGame && !roomData.isHost && UserList[RoomList[newRoomID].members[key].id].roomIDs.length > 1)
-        {
-            console.log("setting false for " + RoomList[newRoomID].members[key].id);
-            roomData.forceSetOnline = true;
-        }
+        
         if(dontCreateRoom == undefined)
         {
             roomData.isPassive = RoomList[newRoomID].isNewGame
