@@ -570,6 +570,7 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
             UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = roomKey
             UserList[socket.id].isHost = false;
             isRoomAvailable = true
+            RoomList[roomKey].isHostOnline = true
         }
     }
     
