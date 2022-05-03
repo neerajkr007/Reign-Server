@@ -576,15 +576,11 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
     var roomData = { roomID: newRoomID, size: _size, memberIDs: _memberIDs, isHost: false, isPassive: false, isNewGame: RoomList[newRoomID].isNewGame}
     for (var key in RoomList[newRoomID].members) 
     {
+        roomData.forceSetOnline = false;
         if(UserList[RoomList[newRoomID].members[key].id] != undefined)
         {
             roomData.isHost = UserList[RoomList[newRoomID].members[key].id].isHost
-            if(roomData.isNewGame && roomData.isHost && UserList[RoomList[newRoomID].members[key].id].roomIDs.length == 1)
-            {
-                console.log("setting true for " + RoomList[newRoomID].members[key].id);
-                roomData.forceSetOnline = false;
-            }
-            else if(roomData.isNewGame && !roomData.isHost && UserList[RoomList[newRoomID].members[key].id].roomIDs.length > 1)
+            if(roomData.isNewGame && !roomData.isHost && UserList[RoomList[newRoomID].members[key].id].roomIDs.length > 1)
             {
                 console.log("setting false for " + RoomList[newRoomID].members[key].id);
                 roomData.forceSetOnline = true;
@@ -593,16 +589,6 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
         else
         {
             roomData.isHost = AwayUserList[RoomList[newRoomID].members[key].id].isHost
-            if(roomData.isNewGame && roomData.isHost && AwayUserList[RoomList[newRoomID].members[key].id].roomIDs.length == 1)
-            {
-                console.log("setting true for " + RoomList[newRoomID].members[key].id);
-                roomData.forceSetOnline = false;
-            }
-            else if(roomData.isNewGame && !roomData.isHost && AwayUserList[RoomList[newRoomID].members[key].id].roomIDs.length > 1)
-            {
-                console.log("setting false for " + RoomList[newRoomID].members[key].id);
-                roomData.forceSetOnline = true;
-            }
         }
         
         if(dontCreateRoom == undefined)
