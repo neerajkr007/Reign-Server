@@ -53,6 +53,7 @@ var Room = function(id){
         readyCount:0,
         hostName:"",
         isHostOnline:true,
+        isJoinedByNewPlayer:false,
         size: ()=>
         {
             var count = 0;
@@ -531,6 +532,10 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
                 {
                     RoomList[newRoomID].isNewGame = isNewGame;
                 }
+                if(UserList[socket.id].roomIDs.length == 1)
+                {
+                    RoomList[newRoomID].isJoinedByNewPlayer = true
+                }
                 RoomList[newRoomID].isOpen = false;
                 isRoomAvailable = true
                 break
@@ -586,11 +591,6 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
 
     var _memberIDs = []
 
-    if(RoomList[newRoomID].isNewGame && Object.keys(RoomList[newRoomID].members).length == 2)
-    {
-
-    }
-
     for (var i = 0; i < RoomList[newRoomID].size(); i++) 
     {
         _memberIDs[i] = RoomList[newRoomID].members[i].id
@@ -602,16 +602,11 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
         if(UserList[RoomList[newRoomID].members[key].id] != undefined)
         {
             roomData.isHost = UserList[RoomList[newRoomID].members[key].id].isHost
-            if(roomData.isNewGame && !roomData.isHost && UserList[RoomList[newRoomID].members[key].id].roomIDs.length > 1)
+            if(roomData.isNewGame && RoomList[newRoomID].isJoinedByNewPlayer && Object.keys(RoomList[newRoomID].members).length == 2)
             {
-                if(key == 0 && (UserList[RoomList[newRoomID].members[1].id].roomIDs.length == 1))
+                if(key == 0)
                 {
-                    console.log("setting true for " + key + " id is " + RoomList[newRoomID].members[key].id);
-                    roomData.forceSetOnline = true;
-                }
-                else if(key == 1 && (UserList[RoomList[newRoomID].members[0].id].roomIDs.length == 1))
-                {
-                    console.log("setting true for " + key + " id is " + RoomList[newRoomID].members[key].id);
+                    console.log("setting true for active player " + RoomList[newRoomID].members[key].id);
                     roomData.forceSetOnline = true;
                 }
             }
