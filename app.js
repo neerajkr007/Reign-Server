@@ -677,7 +677,6 @@ function leaveRoom(socket, roomID)
     // user disconnects
     if(roomID == undefined)
     {
-        console.log( UserList[socket.id].roomIDs);
         for (var currentRoomID of UserList[socket.id].roomIDs) {
             if (RoomList[currentRoomID].size() == 1 && !RoomList[currentRoomID].isNewGame) {
                 delete RoomList[currentRoomID]
@@ -700,7 +699,6 @@ function leaveRoom(socket, roomID)
                         delete RoomList[currentRoomID]
                         break
                     }
-                    console.log("is this called ?")
                     if (RoomList[currentRoomID].members[i].id == socket.id) {
                         RoomList[currentRoomID].isOpen = false
                         if (i == 0) {
