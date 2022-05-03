@@ -362,10 +362,12 @@ io.on('connection', (socket) => {
     })
     
     socket.on("getAllSpawnIDsfromOtherPlayer", (data)=>{
+        console.log("received")
         for(var key in RoomList[data.roomID].members)
         {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
+                console.log("sending")
                 RoomList[data.roomID].members[key].emit("sendAllSpawnIDsToOtherPlayer", data);
             }
         }
