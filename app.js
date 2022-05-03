@@ -604,8 +604,16 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
             roomData.isHost = UserList[RoomList[newRoomID].members[key].id].isHost
             if(roomData.isNewGame && !roomData.isHost && UserList[RoomList[newRoomID].members[key].id].roomIDs.length > 1)
             {
-                console.log("setting false for " + RoomList[newRoomID].members[key].id);
-                roomData.forceSetOnline = true;
+                if(key == 0 && (UserList[RoomList[newRoomID].members[1].id].roomIDs.length == 1))
+                {
+                    console.log("setting true for " + key + " id is " + RoomList[newRoomID].members[key].id);
+                    roomData.forceSetOnline = true;
+                }
+                else if(key == 1 && (UserList[RoomList[newRoomID].members[0].id].roomIDs.length == 1))
+                {
+                    console.log("setting true for " + key + " id is " + RoomList[newRoomID].members[key].id);
+                    roomData.forceSetOnline = true;
+                }
             }
         }
         else
