@@ -541,7 +541,18 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
     {
         if(dontCreateRoom)
         {
-            RoomList[roomKey].members[1] = socket
+            if(UserList[RoomList[roomKey].members[1].id] == undefined)
+            {
+                RoomList[roomKey].members[1] = socket
+            }
+            else if(UserList[RoomList[roomKey].members[0].id] == undefined)
+            {
+                RoomList[roomKey].members[0] = socket
+            }
+            else
+            {
+                RoomList[roomKey].members[1] = socket
+            }
             RoomList[roomKey].isNewGame = false;
             newRoomID = roomKey
             UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = roomKey
@@ -571,6 +582,14 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
     console.log("room size is  " + _size + " total rooms count is " + count)
 
     var _memberIDs = []
+
+    if(RoomList[newRoomID].isNewGame && Object.keys(RoomList[newRoomID].members).length == 2)
+    {
+        if(RoomList[data.matchID].members[0].id == socket.id)
+        delete AwayUserList[RoomList[data.matchID].members[0].id]  
+        RoomList[data.matchID].members[0] = socket;
+    }
+
     for (var i = 0; i < RoomList[newRoomID].size(); i++) 
     {
         _memberIDs[i] = RoomList[newRoomID].members[i].id
