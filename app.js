@@ -583,12 +583,12 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
         UserList[socket.id].isHost = true;
         room.isOpen = !isPassiveMatchMaking;
         room.isNewGame = isNewGame
+        room.hostName = UserList[socket.id].userName;
+        RoomList[room.id] = room;
         if(UserList[socket.id].roomIDs.length == 1)
         {
             RoomList[newRoomID].isCreatedByNewPlayer = true
         }
-        room.hostName = UserList[socket.id].userName;
-        RoomList[room.id] = room;
     }
     var _size = RoomList[newRoomID].size()
 
