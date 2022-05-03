@@ -53,7 +53,7 @@ var Room = function(id){
         readyCount:0,
         hostName:"",
         isHostOnline:true,
-        isJoinedByNewPlayer:false,
+        isCreatedByNewPlayer:false,
         size: ()=>
         {
             var count = 0;
@@ -533,10 +533,6 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
                 {
                     RoomList[newRoomID].isNewGame = isNewGame;
                 }
-                if(UserList[socket.id].roomIDs.length == 1)
-                {
-                    RoomList[newRoomID].isJoinedByNewPlayer = true
-                }
                 RoomList[newRoomID].isOpen = false;
                 isRoomAvailable = true
                 break
@@ -587,6 +583,10 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
         UserList[socket.id].isHost = true;
         room.isOpen = !isPassiveMatchMaking;
         room.isNewGame = isNewGame
+        if(UserList[socket.id].roomIDs.length == 1)
+        {
+            RoomList[newRoomID].isCreatedByNewPlayer = true
+        }
         room.hostName = UserList[socket.id].userName;
         RoomList[room.id] = room;
     }
@@ -610,9 +610,9 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
         if(UserList[RoomList[newRoomID].members[key].id] != undefined)
         {
             roomData.isHost = UserList[RoomList[newRoomID].members[key].id].isHost
-            if(roomData.isNewGame && RoomList[newRoomID].isJoinedByNewPlayer && Object.keys(RoomList[newRoomID].members).length == 2)
+            if(roomData.isNewGame && RoomList[newRoomID].isCreatedByNewPlayer && Object.keys(RoomList[newRoomID].members).length == 2)
             {
-                if(key == 0)
+                if(key == 1)
                 {
                     console.log("setting true for active player " + RoomList[newRoomID].members[key].id);
                     roomData.forceSetOnline = true;
