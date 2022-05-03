@@ -294,6 +294,7 @@ io.on('connection', (socket) => {
     socket.on("joinNewGameRoom", (data)=>{
         if(RoomList[data.matchID] != undefined)
         {
+            console.log("joining the same room as earlier")
             delete AwayUserList[RoomList[data.matchID].members[0].id]
             
             RoomList[data.matchID].members[0] = socket;
