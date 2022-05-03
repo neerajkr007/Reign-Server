@@ -547,19 +547,26 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
     {
         if(dontCreateRoom)
         {
-            if(UserList[RoomList[roomKey].members[1].id] == undefined)
+            if(Object.keys(RoomList[newRoomID].members).length == 2)
             {
-                console.log(RoomList[roomKey].members[1].id + " is dead so replaced by " + socket.id)
-                RoomList[roomKey].members[1] = socket
-            }
-            else if(UserList[RoomList[roomKey].members[0].id] == undefined)
-            {
-                console.log(RoomList[roomKey].members[0].id + " is dead so replaced by 2 " + socket.id)
-                RoomList[roomKey].members[0] = socket
+                if(UserList[RoomList[roomKey].members[1].id] == undefined)
+                {
+                    console.log(RoomList[roomKey].members[1].id + " is dead so replaced by " + socket.id)
+                    RoomList[roomKey].members[1] = socket
+                }
+                else if(UserList[RoomList[roomKey].members[0].id] == undefined)
+                {
+                    console.log(RoomList[roomKey].members[0].id + " is dead so replaced by 2 " + socket.id)
+                    RoomList[roomKey].members[0] = socket
+                }
+                else
+                {
+                    console.log("no changes")
+                    RoomList[roomKey].members[1] = socket
+                }
             }
             else
             {
-                console.log("no changes")
                 RoomList[roomKey].members[1] = socket
             }
             RoomList[roomKey].isNewGame = false;
