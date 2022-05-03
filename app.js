@@ -367,7 +367,7 @@ io.on('connection', (socket) => {
         {
             if(RoomList[data.roomID].members[key].id != socket.id)
             {
-                console.log("sending")
+                console.log("sending to " + RoomList[data.roomID].members[key].id)
                 RoomList[data.roomID].members[key].emit("sendAllSpawnIDsToOtherPlayer", data);
             }
         }
