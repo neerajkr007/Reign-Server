@@ -547,7 +547,7 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
     {
         if(dontCreateRoom)
         {
-            if(Object.keys(RoomList[newRoomID].members).length == 2)
+            if(Object.keys(RoomList[roomKey].members).length == 2)
             {
                 if(UserList[RoomList[roomKey].members[1].id] == undefined)
                 {
