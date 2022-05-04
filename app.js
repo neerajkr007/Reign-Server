@@ -628,6 +628,11 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
         if(dontCreateRoom == undefined)
         {
             roomData.isPassive = RoomList[newRoomID].isNewGame
+            if(!roomData.isNewGame)
+            {
+                console.log("setting force online for 2 new players ");
+                roomData.forceSetOnline = true;
+            }
             if(roomData.isNewGame && Object.keys(RoomList[newRoomID].members).length == 2)
             {
                 if(RoomList[newRoomID].members[key].id != socket.id)
