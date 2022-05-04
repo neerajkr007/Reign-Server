@@ -650,6 +650,7 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
                     }
                 }
             }
+            console.log("1 : " + roomData)
             RoomList[newRoomID].members[key].emit("enteredMatchMaking", roomData);
         }
         else
@@ -657,11 +658,13 @@ function enterMatchMaking(socket, isPassiveMatchMaking, isNewGame, dontCreateRoo
             if(dontCreateRoom)
             {
                 roomData.isPassive = true
+                console.log("2 : " + roomData)
                 RoomList[newRoomID].members[key].emit("enteredMatchMaking", roomData);
             }
             else
             {
                 roomData.isPassive = false
+                console.log("3 : " + roomData)
                 RoomList[newRoomID].members[key].emit("enteredMatchMaking", roomData);
             }
         }
