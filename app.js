@@ -496,6 +496,30 @@ io.on('connection', (socket) => {
         }
 	});
 
+    socket.on("rejectChallenge", (data)=>{
+        for(var key in UserList)
+        {
+            if (UserList[key].FBUID == data.challengerFBUID && socket != UserList[key].socket) 
+            {
+                UserList[key].socket.emit("rejectChallenge", data);
+                break;
+            }
+        }
+    });
+
+    socket.on("challengePlayerMessage", (data)=>{
+        console.log("challengine player " + data.challengedFBUID)
+        for(var key in UserList)
+        {
+            if (UserList[key].FBUID == data.challengedFBUID && socket != UserList[key].socket) 
+            {
+                UserList[key].socket.emit("challengePlayerMessage", data);
+                break;
+            }
+        }
+    });
+
+
 	socket.on('disconnect', (data) => {
         manageDisconnect(socket);
 	});
