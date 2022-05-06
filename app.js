@@ -507,6 +507,28 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on("acceptedChallenge", (data)=>{
+        for(var key in UserList)
+        {
+            if (UserList[key].FBUID == data.challengerFBUID && socket != UserList[key].socket) 
+            {
+                UserList[key].socket.emit("acceptedChallenge", data);
+                break;
+            }
+        }
+    });
+
+    socket.on("enterPrivateMatch", (data)=>{
+        for(var key in UserList)
+        {
+            if (UserList[key].FBUID == data && socket != UserList[key].socket) 
+            {
+                createPrivateMatch(socket, UserList[key].socket)
+                break;
+            }
+        }
+    });
+
     socket.on("challengePlayerMessage", (data)=>{
         console.log("challengine player " + data.challengedFBUID)
         for(var key in UserList)
@@ -781,5 +803,42 @@ function leaveRoom(socket, roomID)
             }
             console.log("after leaving room size is  " + RoomList[currentRoomID].size() + " total rooms count is " + count)
         }
+    }
+
+}
+
+function createPrivateMatch(socket, otherPlayer)
+{
+    var room = Room(uuidv1())
+    room.members[0] = socket;
+    room.members[1] = otherPlayer;
+    newRoomID = room.id;
+    UserList[socket.id].roomIDs[UserList[socket.id].roomIDs.length] = newRoomID
+    UserList[socket.id].isHost = true;
+    UserList[otherPlayer.id].roomIDs[UserList[otherPlayer.id].roomIDs.length] = newRoomID
+    UserList[otherPlayer.id].isHost = false;
+    room.isOpen = false;
+    room.isNewGame = false
+    room.hostName = UserList[socket.id].userName;
+    RoomList[room.id] = room;
+
+    var count = Object.keys(RoomList).length
+    var _size = RoomList[newRoomID].size()
+
+    console.log("new private room id is " + newRoomID)
+    console.log("room size is  " + _size + " total rooms count is " + count)
+
+    var _memberIDs = []
+
+    for (var i = 0; i < RoomList[newRoomID].size(); i++) 
+    {
+        _memberIDs[i] = RoomList[newRoomID].members[i].id
+    }
+
+    var roomData = { roomID: newRoomID, size: _size, memberIDs: _memberIDs, isHost: false, isPassive: false, isNewGame: RoomList[newRoomID].isNewGame, forceSetOnline: true }
+    for (var key in RoomList[newRoomID].members) 
+    {
+        roomData.isHost = UserList[RoomList[newRoomID].members[key].id].isHost
+        RoomList[newRoomID].members[key].emit("enteredMatchMaking", roomData);
     }
 }
