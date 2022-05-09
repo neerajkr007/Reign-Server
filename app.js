@@ -198,6 +198,7 @@ console.log("room list is " + Object.keys(RoomList).length)
 
 
 io.on('connection', (socket) => {
+    
 	socket.id = uuidv4()
     console.log("socket connected with id " + socket.id);
 
