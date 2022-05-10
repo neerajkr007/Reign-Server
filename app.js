@@ -72,6 +72,12 @@ app.get('/', (req, res) =>
     res.send('Hello World!');
 });
 
+app.get('/userCount', (req, res) =>
+{
+    console.log("active user count is " + Object.keys(UserList).length)
+    res.send('');
+});
+
 var RoomList = {}
 
 var UserList = {}
