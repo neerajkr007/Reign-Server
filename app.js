@@ -72,11 +72,17 @@ app.get('/', (req, res) =>
     res.send('Hello World!');
 });
 
+app.get('/reign', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
 app.get('/userCount', (req, res) =>
 {
     console.log("active user count is " + Object.keys(UserList).length)
     res.send('');
 });
+
+app.use(express.static(__dirname + '/public'));
 
 var RoomList = {}
 
