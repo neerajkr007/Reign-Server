@@ -66,13 +66,13 @@ var Room = function(id){
     return self;
 }
 
-app.get('/', (req, res) =>
+app.get('/ping', (req, res) =>
 {
     console.log("page pinged")
     res.send('Hello World!');
 });
 
-app.get('/reign', (req, res) => {
+app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
 });
 
