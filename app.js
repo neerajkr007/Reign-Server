@@ -69,7 +69,7 @@ var Room = function(id){
 app.get('/ping', (req, res) =>
 {
     console.log("page pinged")
-    res.send('Hello World!');
+    res.send('Hey, you are not supposed to be here!');
 });
 
 app.get('/', (req, res) => {
