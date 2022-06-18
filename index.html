@@ -10,42 +10,45 @@
     <script src="Build/websocketTestBuilds.loader.js"></script>
 
     <script>
-      createUnityInstance(document.querySelector("#unity-canvas"), {
-        dataUrl: "Build/websocketTestBuilds.data",
-        frameworkUrl: "Build/websocketTestBuilds.framework.js",
-        codeUrl: "Build/websocketTestBuilds.wasm",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "Reign",
-        productVersion: "1.0",
-      }).then((unityInstance) => {(this.unityInstance = unityInstance)
+      // createUnityInstance(document.querySelector("#unity-canvas"), {
+      //   dataUrl: "Build/websocketTestBuilds.data",
+      //   frameworkUrl: "Build/websocketTestBuilds.framework.js",
+      //   codeUrl: "Build/websocketTestBuilds.wasm",
+      //   streamingAssetsUrl: "StreamingAssets",
+      //   companyName: "DefaultCompany",
+      //   productName: "Reign",
+      //   productVersion: "1.0",
+      // }).then((unityInstance) => {(this.unityInstance = unityInstance)
         
         
-          //"Users/" + currentOpponentFBUID + "/SessionData/matchList/" + _i, "{\"opponentFBUID\":\"" + FirebaseController.Instance.currentUserData.userId + "\"}", FirebaseController.Instance.gameObject.name, "onPostedJSON", "onPostedJSONFailed"
-          //unityInstance.SendMessage('FirebaseController', 'functionForTesting', "getJson,Users/OUaS758cIPZoHF1ocTkEmHFsvwR2/SessionData/matchList/0/opponentFBUID/,FirebaseController,onReceivedJSON,onReceivedJSONFailed")
-          //unityInstance.SendMessage('FirebaseController', 'functionForTesting', "getJson,Users/,FirebaseController,onReceivedJSON,onReceivedJSONFailed")
+      //     //"Users/" + currentOpponentFBUID + "/SessionData/matchList/" + _i, "{\"opponentFBUID\":\"" + FirebaseController.Instance.currentUserData.userId + "\"}", FirebaseController.Instance.gameObject.name, "onPostedJSON", "onPostedJSONFailed"
+      //     //unityInstance.SendMessage('FirebaseController', 'functionForTesting', "getJson,Users/OUaS758cIPZoHF1ocTkEmHFsvwR2/SessionData/matchList/0/opponentFBUID/,FirebaseController,onReceivedJSON,onReceivedJSONFailed")
+      //     //unityInstance.SendMessage('FirebaseController', 'functionForTesting', "getJson,Users/,FirebaseController,onReceivedJSON,onReceivedJSONFailed")
           
-          //unityInstance.SendMessage('FirebaseController', 'functionForTesting', "updateJson,Notifications/SentNotification/OUaS758cIPZoHF1ocTkEmHFsvwR2/,[{\"opponentUserName\":\"Hey there! this works!\"}],FirebaseController,onPostedJSON,onPostedJSONFailed")
+      //     //unityInstance.SendMessage('FirebaseController', 'functionForTesting', "updateJson,Notifications/SentNotification/OUaS758cIPZoHF1ocTkEmHFsvwR2/,[{\"opponentUserName\":\"Hey there! this works!\"}],FirebaseController,onPostedJSON,onPostedJSONFailed")
           
-          //unityInstance.SendMessage('FirebaseController', 'testLibraryUpdateFunction', "Users/MYiQYsi9v5WB6zmZ1OBFixuYxTy1/SessionData/matchList/,opponentFBUID,OUaS758cIPZoHF1ocTkEmHFsvwR2,{\"opponentUserName\":\"Hey there! this works!\"}");
-          //unityInstance.SendMessage('FirebaseController', 'testLibraryPushFunction', "Notifications/ReceivedNotifications/OUaS758cIPZoHF1ocTkEmHFsvwR2/,{\"opponentUserName\":\"Hey there! this works!\"}");
+      //     //unityInstance.SendMessage('FirebaseController', 'testLibraryUpdateFunction', "Users/MYiQYsi9v5WB6zmZ1OBFixuYxTy1/SessionData/matchList/,opponentFBUID,OUaS758cIPZoHF1ocTkEmHFsvwR2,{\"opponentUserName\":\"Hey there! this works!\"}");
+      //     //unityInstance.SendMessage('FirebaseController', 'testLibraryPushFunction', "Notifications/ReceivedNotifications/OUaS758cIPZoHF1ocTkEmHFsvwR2/,{\"opponentUserName\":\"Hey there! this works!\"}");
           
-      window.onbeforeunload = function(e) {
-        console.log("Calling OnClose from Browser!");
-        unityInstance.SendMessage('FirebaseController', 'applicationQuitFromWebPage');
-      };});
+      // window.onbeforeunload = function(e) {
+      //   console.log("Calling OnClose from Browser!");
+      //   unityInstance.SendMessage('FirebaseController', 'applicationQuitFromWebPage');
+      // };});
     </script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-D0DL5N3XPJ"></script>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-D0DL5N3XPJ"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
-      function gtag(){window.dataLayer.push(arguments);}
+      function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
       gtag('config', 'G-D0DL5N3XPJ', { 'debug_mode':true });
+      gtag('event', 'sign_in2', { 'debug_mode':true });
     </script>
     <script type="module">
       const firebaseConfig = {
@@ -64,12 +67,7 @@
       import { getAnalytics, logEvent } from 'https://www.gstatic.com/firebasejs/9.8.3/firebase-analytics.js'
       
       const analytics = getAnalytics(app);
-      gtag('event', 'sign_in2', { 'debug_mode':true });
-      logEvent(analytics, 'select_content', {
-        content_type: 'image',
-        content_id: 'P12453',
-        items: [{ name: 'Kittens' }]
-      });
+      logEvent(analytics, 'select_content', { 'debug_mode':true });
 
     </script>
   </body>
