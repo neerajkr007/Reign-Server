@@ -39,7 +39,6 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-D0DL5N3XPJ"></script>
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-D0DL5N3XPJ"></script>
     <script>
@@ -47,8 +46,9 @@
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'G-D0DL5N3XPJ', { 'debug_mode':true });
-      gtag('event', 'sign_in2', { 'debug_mode':true });
+      gtag('config', 'G-D0DL5N3XPJ');
+      gtag('event', 'sign_in2', {name : "Neeraj", type:"dev"});
+      gtag('event', 'withoutDebug', {name : "Neeraj", type:"dev"});
     </script>
     <script type="module">
       const firebaseConfig = {
