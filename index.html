@@ -47,8 +47,9 @@
       gtag('js', new Date());
 
       gtag('config', 'G-D0DL5N3XPJ');
-      gtag('event', 'sign_in2', {name : "Neeraj", type:"dev"});
-      gtag('event', 'withoutDebug', {name : "Neeraj", type:"dev"});
+      gtag('event', 'sign_in2', { 'debug_mode':true });
+      gtag('event', 'withDebug11', {name : "Neeraj", type:"dev"}, { 'debug_mode':true });
+      gtag('event', 'withDebug21', { 'debug_mode':true });
     </script>
     <script type="module">
       const firebaseConfig = {
