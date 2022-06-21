@@ -47,7 +47,7 @@
       gtag('js', new Date());
 
       gtag('config', 'G-D0DL5N3XPJ');
-      gtag('event', 'testEvent', { name : "Neeraj", type:"dev"});
+      gtag('event', 'testEvent', { "name" : "Neeraj", "type":"dev"});
     </script>
     <script type="module">
       const firebaseConfig = {
@@ -63,10 +63,10 @@
       // Initialize Firebase
       const app = firebase.initializeApp(firebaseConfig);
       
-      import { getAnalytics, logEvent } from 'https://www.gstatic.com/firebasejs/9.8.3/firebase-analytics.js'
+      // import { getAnalytics, logEvent } from 'https://www.gstatic.com/firebasejs/9.8.3/firebase-analytics.js'
       
-      const analytics = getAnalytics(app);
-      logEvent(analytics, 'select_content', { 'debug_mode':true });
+      // const analytics = getAnalytics(app);
+      // logEvent(analytics, 'select_content', { 'debug_mode':true });
 
     </script>
   </body>
