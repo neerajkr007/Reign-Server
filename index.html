@@ -9,65 +9,57 @@
     <canvas id="unity-canvas" style="width: 1200px; height: 675px; background: #231F20"></canvas>
     <script src="Build/websocketTestBuilds.loader.js"></script>
 
-    <script>
-      createUnityInstance(document.querySelector("#unity-canvas"), {
-        dataUrl: "Build/websocketTestBuilds.data",
-        frameworkUrl: "Build/websocketTestBuilds.framework.js",
-        codeUrl: "Build/websocketTestBuilds.wasm",
-        streamingAssetsUrl: "StreamingAssets",
-        companyName: "DefaultCompany",
-        productName: "Reign",
-        productVersion: "1.0",
-      }).then((unityInstance) => {(this.unityInstance = unityInstance)
-        
-        
-          //"Users/" + currentOpponentFBUID + "/SessionData/matchList/" + _i, "{\"opponentFBUID\":\"" + FirebaseController.Instance.currentUserData.userId + "\"}", FirebaseController.Instance.gameObject.name, "onPostedJSON", "onPostedJSONFailed"
-          //unityInstance.SendMessage('FirebaseController', 'functionForTesting', "getJson,Users/OUaS758cIPZoHF1ocTkEmHFsvwR2/SessionData/matchList/0/opponentFBUID/,FirebaseController,onReceivedJSON,onReceivedJSONFailed")
-          //unityInstance.SendMessage('FirebaseController', 'functionForTesting', "getJson,Users/,FirebaseController,onReceivedJSON,onReceivedJSONFailed")
-          
-          //unityInstance.SendMessage('FirebaseController', 'functionForTesting', "updateJson,Notifications/SentNotification/OUaS758cIPZoHF1ocTkEmHFsvwR2/,[{\"opponentUserName\":\"Hey there! this works!\"}],FirebaseController,onPostedJSON,onPostedJSONFailed")
-          
-          //unityInstance.SendMessage('FirebaseController', 'testLibraryUpdateFunction', "Users/MYiQYsi9v5WB6zmZ1OBFixuYxTy1/SessionData/matchList/,opponentFBUID,OUaS758cIPZoHF1ocTkEmHFsvwR2,{\"opponentUserName\":\"Hey there! this works!\"}");
-          //unityInstance.SendMessage('FirebaseController', 'testLibraryPushFunction', "Notifications/ReceivedNotifications/OUaS758cIPZoHF1ocTkEmHFsvwR2/,{\"opponentUserName\":\"Hey there! this works!\"}");
-          
-      window.onbeforeunload = function(e) {
-        console.log("Calling OnClose from Browser!");
-        unityInstance.SendMessage('FirebaseController', 'applicationQuitFromWebPage');
-      };});
-    </script>
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-analytics.js"></script>
-    <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-D0DL5N3XPJ"></script>
     <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-
-      gtag('config', 'G-D0DL5N3XPJ');
-      gtag('event', 'testEvent', { "name" : "Neeraj", "type":"dev"});
-    </script>
-    <script type="module">
       const firebaseConfig = {
         apiKey: "AIzaSyCLEp5qGTHhO4iwW9bTTS1pWt0se_T0qi8",
         authDomain: "reign-ef335.firebaseapp.com",
         projectId: "reign-ef335",
         storageBucket: "reign-ef335.appspot.com",
         messagingSenderId: "123322340581",
-        appId: "1:123322340581:web:dee00a9cc6a9fa4957700c",
-        measurementId: "G-D0DL5N3XPJ"
+        appId: "1:123322340581:web:dee00a9cc6a9fa4957700c"
       };
 
       // Initialize Firebase
       const app = firebase.initializeApp(firebaseConfig);
+      const analytics = firebase.analytics();
+      //analytics.logEvent('testEvent3', {name:"Neeraj", method:"withoutGtag"});
       
-      // import { getAnalytics, logEvent } from 'https://www.gstatic.com/firebasejs/9.8.3/firebase-analytics.js'
-      
-      // const analytics = getAnalytics(app);
-      // logEvent(analytics, 'select_content', { 'debug_mode':true });
+      loadGame();
 
+      function loadGame()
+      {
+        createUnityInstance(document.querySelector("#unity-canvas"), {
+          dataUrl: "Build/websocketTestBuilds.data",
+          frameworkUrl: "Build/websocketTestBuilds.framework.js",
+          codeUrl: "Build/websocketTestBuilds.wasm",
+          streamingAssetsUrl: "StreamingAssets",
+          companyName: "DefaultCompany",
+          productName: "Reign",
+          productVersion: "1.0",
+        }).then((unityInstance) => {
+          (this.unityInstance = unityInstance)
+
+          //analytics.logEvent('testEvent2', {name:"Neeraj", method:"withoutGtag"});
+          //"Users/" + currentOpponentFBUID + "/SessionData/matchList/" + _i, "{\"opponentFBUID\":\"" + FirebaseController.Instance.currentUserData.userId + "\"}", FirebaseController.Instance.gameObject.name, "onPostedJSON", "onPostedJSONFailed"
+          //unityInstance.SendMessage('FirebaseController', 'functionForTesting', "getJson,Users/OUaS758cIPZoHF1ocTkEmHFsvwR2/SessionData/matchList/0/opponentFBUID/,FirebaseController,onReceivedJSON,onReceivedJSONFailed")
+          //unityInstance.SendMessage('FirebaseController', 'functionForTesting', "getJson,Users/,FirebaseController,onReceivedJSON,onReceivedJSONFailed")
+
+          //unityInstance.SendMessage('FirebaseController', 'functionForTesting', "updateJson,Notifications/SentNotification/OUaS758cIPZoHF1ocTkEmHFsvwR2/,[{\"opponentUserName\":\"Hey there! this works!\"}],FirebaseController,onPostedJSON,onPostedJSONFailed")
+
+          //unityInstance.SendMessage('FirebaseController', 'testLibraryUpdateFunction', "Users/MYiQYsi9v5WB6zmZ1OBFixuYxTy1/SessionData/matchList/,opponentFBUID,OUaS758cIPZoHF1ocTkEmHFsvwR2,{\"opponentUserName\":\"Hey there! this works!\"}");
+          //unityInstance.SendMessage('FirebaseController', 'testLibraryPushFunction', "Notifications/ReceivedNotifications/OUaS758cIPZoHF1ocTkEmHFsvwR2/,{\"opponentUserName\":\"Hey there! this works!\"}");
+
+          window.onbeforeunload = function (e) {
+            console.log("Calling OnClose from Browser!");
+            unityInstance.SendMessage('FirebaseController', 'applicationQuitFromWebPage');
+          };
+        });
+      }
     </script>
   </body>
 </html>

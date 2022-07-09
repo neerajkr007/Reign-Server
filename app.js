@@ -87,7 +87,7 @@ app.use(express.static(__dirname + '/public'));
 var RoomList = {}
 
 var UserList = {}
-
+ 
 var AwayUserList = {}
 
 console.log("room list is " + Object.keys(RoomList).length)
